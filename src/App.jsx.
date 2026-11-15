@@ -1,0 +1,380 @@
+
+import React, { useState } from "react";
+
+const locations = [
+  "Nebbi",
+  "Paidha",
+  "Arua",
+  "Koboko",
+  "Madi-Okollo",
+  "Yumbe",
+  "Adjumani",
+  "Pakwach",
+  "Panyimur",
+];
+
+function App() {
+  const [transport, setTransport] = useState("Boda boda");
+  const [phone, setPhone] = useState("");
+  const [pickup, setPickup] = useState("");
+  const [destination, setDestination] = useState("");
+  const [payment, setPayment] = useState("MTN Mobile Money");
+  const [travelDate, setTravelDate] = useState("");
+  const [passengers, setPassengers] = useState("1");
+  const [notice, setNotice] = useState("");
+
+  const today = new Date().toISOString().split("T")[0];
+
+  function handleBooking(event) {
+    event.preventDefault();
+    setNotice("");
+
+    if (!phone.trim() || !pickup || !destination) {
+      setNotice("Please enter your phone number, pickup and destination.");
+      return;
+    }
+
+    if (pickup === destination) {
+      setNotice("Pickup and destination cannot be the same.");
+      return;
+    }
+
+    if (transport === "Bus" && !travelDate) {
+      setNotice("Please select your bus travel date.");
+      return;
+    }
+
+    if (transport === "Bus" && travelDate < today) {
+      setNotice("Please select a future travel date.");
+      return;
+    }
+
+    setNotice(
+      "Your booking details are ready! Live booking and payment will be activated when the backend is connected."
+    );
+  }
+
+  function changeTransport(type) {
+    setTransport(type);
+    setNotice("");
+
+    if (type === "Bus" && payment === "Cash") {
+      setPayment("MTN Mobile Money");
+    }
+  }
+
+  return (
+    <div className="app">
+      <header className="site-header">
+        <a className="logo" href="#home">
+          <span className="logo-icon">N</span>
+          <span>
+            NileSoniQ <strong>Ride</strong>
+          </span>
+        </a>
+
+        <nav className="navigation">
+          <a href="#home">Home</a>
+          <a href="#booking">Book a ride</a>
+          <a href="#how-it-works">How it works</a>
+          <a href="#drivers">For drivers</a>
+        </nav>
+
+        <a className="header-button" href="#booking">
+          Book now
+        </a>
+      </header>
+
+      <main>
+        <section className="hero" id="home">
+          <div className="hero-content">
+            <span className="eyebrow">YOUR JOURNEY, MADE EASIER</span>
+
+            <h1>
+              Move around
+              <br />
+              <span>West Nile</span> with ease.
+            </h1>
+
+            <p>
+              Book boda bodas, taxis and buses across West Nile, Uganda.
+              Your journey starts with NileSoniQ Ride.
+            </p>
+
+            <a className="primary-button" href="#booking">
+              Book your journey
+            </a>
+
+            <div className="hero-details">
+              <span>Simple booking</span>
+              <span>Local journeys</span>
+              <span>Easy payments</span>
+            </div>
+          </div>
+
+          <div className="hero-card">
+            <div className="hero-card-top">
+              <span className="live-dot"></span>
+              WEST NILE, UGANDA
+            </div>
+
+            <div className="journey-visual">
+              <div className="journey-point">
+                <span className="point-icon">●</span>
+                <div>
+                  <small>START YOUR JOURNEY</small>
+                  <strong>Choose pickup</strong>
+                </div>
+              </div>
+
+              <div className="journey-line"></div>
+
+              <div className="journey-point">
+                <span className="point-icon destination-icon">●</span>
+                <div>
+                  <small>YOUR DESTINATION</small>
+                  <strong>Choose where to go</strong>
+                </div>
+              </div>
+            </div>
+
+            <div className="hero-card-footer">
+              <span>Travel your way.</span>
+              <strong>NileSoniQ Ride</strong>
+            </div>
+          </div>
+        </section>
+
+        <section className="booking-section" id="booking">
+          <div className="section-heading">
+            <span className="eyebrow">START HERE</span>
+            <h2>Where would you like to go?</h2>
+            <p>Choose your transport and enter your journey details.</p>
+          </div>
+
+          <div className="booking-card">
+            <div className="transport-options">
+              {["Boda boda", "Taxi", "Bus"].map((type) => (
+                <button
+                  type="button"
+                  key={type}
+                  className={
+                    transport === type
+                      ? "transport-option active"
+                      : "transport-option"
+                  }
+                  onClick={() => changeTransport(type)}
+                >
+                  <span>
+                    {type === "Boda boda"
+                      ? "🏍️"
+                      : type === "Taxi"
+                        ? "🚕"
+                        : "🚌"}
+                  </span>
+                  {type}
+                </button>
+              ))}
+            </div>
+
+            <form onSubmit={handleBooking}>
+              <div className="form-grid">
+                <label className="form-field">
+                  <span>Your phone number</span>
+                  <input
+                    type="tel"
+                    placeholder="e.g. 07XXXXXXXX"
+                    value={phone}
+                    onChange={(event) => setPhone(event.target.value)}
+                    required
+                  />
+                </label>
+
+                <label className="form-field">
+                  <span>Pickup location</span>
+                  <select
+                    value={pickup}
+                    onChange={(event) => setPickup(event.target.value)}
+                    required
+                  >
+                    <option value="">Choose pickup location</option>
+                    {locations.map((location) => (
+                      <option key={location} value={location}>
+                        {location}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+
+                <label className="form-field">
+                  <span>Destination</span>
+                  <select
+                    value={destination}
+                    onChange={(event) => setDestination(event.target.value)}
+                    required
+                  >
+                    <option value="">Choose destination</option>
+                    {locations.map((location) => (
+                      <option key={location} value={location}>
+                        {location}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+
+                {transport === "Bus" && (
+                  <>
+                    <label className="form-field">
+                      <span>Travel date</span>
+                      <input
+                        type="date"
+                        min={today}
+                        value={travelDate}
+                        onChange={(event) => setTravelDate(event.target.value)}
+                        required
+                      />
+                    </label>
+
+                    <label className="form-field">
+                      <span>Number of passengers</span>
+                      <select
+                        value={passengers}
+                        onChange={(event) => setPassengers(event.target.value)}
+                      >
+                        {[1, 2, 3, 4, 5, 6].map((number) => (
+                          <option key={number} value={number}>
+                            {number}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                  </>
+                )}
+
+                <label className="form-field">
+                  <span>Payment method</span>
+                  <select
+                    value={payment}
+                    onChange={(event) => setPayment(event.target.value)}
+                  >
+                    <option value="MTN Mobile Money">
+                      MTN Mobile Money
+                    </option>
+                    <option value="Airtel Money">Airtel Money</option>
+                    {transport !== "Bus" && (
+                      <option value="Cash">Cash</option>
+                    )}
+                  </select>
+                </label>
+              </div>
+
+              <button className="primary-button booking-button" type="submit">
+                Continue booking
+              </button>
+
+              {notice && (
+                <div className="booking-notice" role="status">
+                  {notice}
+                </div>
+              )}
+
+              <p className="form-disclaimer">
+                This is an early website preview. Bookings and payments are
+                not live yet.
+              </p>
+            </form>
+          </div>
+        </section>
+
+        <section className="how-section" id="how-it-works">
+          <div className="section-heading">
+            <span className="eyebrow">SIMPLE AND CONVENIENT</span>
+            <h2>How NileSoniQ Ride works</h2>
+            <p>Three simple steps to get your journey started.</p>
+          </div>
+
+          <div className="steps-grid">
+            <article className="step-card">
+              <span className="step-number">01</span>
+              <h3>Choose your ride</h3>
+              <p>
+                Select a boda boda, taxi or bus for your journey.
+              </p>
+            </article>
+
+            <article className="step-card">
+              <span className="step-number">02</span>
+              <h3>Enter your details</h3>
+              <p>
+                Tell us where you are going and provide your contact number.
+              </p>
+            </article>
+
+            <article className="step-card">
+              <span className="step-number">03</span>
+              <h3>Start your journey</h3>
+              <p>
+                Once the booking service is connected, you will be able to
+                confirm your journey.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section className="coverage-section">
+          <div className="section-heading">
+            <span className="eyebrow">OUR SERVICE AREA</span>
+            <h2>Across West Nile</h2>
+            <p>
+              We are preparing to connect passengers and transport operators
+              across these communities.
+            </p>
+          </div>
+
+          <div className="location-list">
+            {locations.map((location) => (
+              <span className="location-chip" key={location}>
+                {location}
+              </span>
+            ))}
+          </div>
+        </section>
+
+        <section className="drivers-section" id="drivers">
+          <div>
+            <span className="eyebrow">DRIVE WITH US</span>
+            <h2>Are you a driver or bus operator?</h2>
+            <p>
+              Join the NileSoniQ Ride network and get ready to connect with
+              passengers looking for transport in West Nile.
+            </p>
+          </div>
+
+          <div className="driver-note">
+            <strong>Driver registration is coming soon.</strong>
+            <span>
+              We are preparing driver accounts, dashboards and payment
+              management.
+            </span>
+          </div>
+        </section>
+      </main>
+
+      <footer className="site-footer">
+        <a className="logo" href="#home">
+          <span className="logo-icon">N</span>
+          <span>
+            NileSoniQ <strong>Ride</strong>
+          </span>
+        </a>
+
+        <p>Connecting journeys across West Nile, Uganda.</p>
+        <span className="copyright">
+          © {new Date().getFullYear()} NileSoniQ Ride. All rights reserved.
+        </span>
+      </footer>
+    </div>
+  );
+}
+
+export default App;
